@@ -1,0 +1,15 @@
+.chart {
+    width: 50%;
+    margin: 10px;
+}
+
+.country-title {
+    margin-bottom: 0;
+}
+
+@media only screen and (max-width: 750px) {
+    .chart {
+        width: 100%;
+        margin: 0;
+    }
+  }

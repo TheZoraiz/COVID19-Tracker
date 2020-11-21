@@ -1,40 +1,48 @@
-// import './Loading.css';
+import './charts.css';
 import { Line } from 'react-chartjs-2'
 import { useState, useEffect } from 'react'
 
-function CustomChart({ text }) {
+
+function CustomChart({ title, graphData, type, text }) {
   const [ sample, setSample ] = useState({});
+  const [ typeBool ] = useState((type == 'first'))
 
   useEffect(() => {
     setSample({
-      labels: [ '1', '2', '3', '4', '5', '6', '7', '8' ],
+      labels: graphData.map(element => element.date.slice(0, 10)),
       datasets: [
         {
-          label: 'Haha sample go brrr',
-          data: [ 6, 4, 8, 3, 2, 4, 6, 7 ],
+          label: typeBool ? 'Total Case History' : 'Active Cases',
+          data: typeBool ? graphData.map(element => element.confirmed) : graphData.map(element => element.active),
           backgroundColor: 'rgba(1,1,1,0)',
           borderWidth: 2,
-          borderColor: 'red',
+          borderColor: typeBool ? '#ff4040' : 'orange',
+          radius: 1.2,
         },
         {
-          label: 'You no go brrr',
-          data: [ 1, 1, 3, 8, 5, 0, 1, 5 ],
+          label: typeBool? 'Total Cases Recovered' : 'Total Deaths',
+          data: typeBool ? graphData.map(element => element.recovered) : graphData.map(element => element.deaths),
           backgroundColor: 'rgba(1,1,1,0)',
           borderWidth: 2,
-          borderColor: 'turquoise',
+          borderColor: typeBool ? 'turquoise' : 'red',
+          radius: 1.2,
         },
       ]
     });
-  }, [])
+  }, [graphData])
 
   return (
     <div className="chart">
-        <Line
-          data={sample}
-          options={{
-            resposive: true,
-          }}
-        />
+      <h2 className='country-title'>{typeBool ? `${title} Case History` : `${title} Current Cases`}</h2>
+      <Line
+      data={sample}
+      height={null}
+      width={null}
+      options={{
+        aspectRatio: 1.15,
+        resposive: true,
+      }}
+      />
     </div>
   );
 }
