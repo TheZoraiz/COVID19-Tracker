@@ -1,9 +1,14 @@
+.heading {
+  margin-bottom: 0;
+}
+
 #daddy {
-  margin: auto 0;
+  margin-top: 0;
 }
 
 .App {
   text-align: center;
+  font-family: Rubik, serif;
 }
 
 .App-logo {
