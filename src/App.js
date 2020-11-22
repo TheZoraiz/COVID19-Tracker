@@ -1,6 +1,7 @@
 import './App.css';
 import { useState, useEffect } from 'react'
 import Select from 'react-select';
+import ReactGA from 'react-ga';
 
 import CustomChart from './components/CustomChart.js'
 import Loading from './components/Loading.js'
@@ -138,6 +139,9 @@ const App = () => {
     await promisedSleep(500);
     
     let totalCountries = await fetchCountries()
+
+    totalCountries = totalCountries.filter(element => element.slug != 'united-states');
+
     setCountries(totalCountries);
     getCountryData({value: totalCountries[0].slug})
   }, [])
@@ -146,7 +150,9 @@ const App = () => {
     <div className="App">
       <h1 className='heading'>COVID-19 Tracker</h1>
       <h2 id='daddy'>By Zoraiz</h2>
-      
+
+      <hr style={{width: '95%'}}/>
+
       <div className='selectors'>
         <div className='select-container select-country'>
           <h3>Select Country</h3>
@@ -199,6 +205,8 @@ const App = () => {
         </div>
       </div>
 
+      <hr style={{width: '95%'}}/>
+
       {visible && !yearlyDisplay &&
         <div className='row'>
         <CustomChart title={temp[0].name} type={'first'} graphData={temp.filter(element => element.date.month == chosenMonth && element.date.year == chosenYear)} dots={1.2}/>
@@ -217,7 +225,7 @@ const App = () => {
         <div class='about'>
         <h2>About</h2>
         <p>
-          The data used for the graphs in this project is publically available
+          The data used for the graphs in this project is publicly available
           and was obtained from the COVID 19 API <a href='https://covid19api.com'>here</a>.
           All credits for the data go to the source. Please visit their website and support them.
           <br />
