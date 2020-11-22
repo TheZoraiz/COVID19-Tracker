@@ -219,7 +219,7 @@ const App = () => {
         <p>
           The data used for the graphs in this project is publically available
           and was obtained from the COVID 19 API <a href='https://covid19api.com'>here</a>.
-          All credits go to the source. Please visit their website and support them.
+          All credits for the data go to the source. Please visit their website and support them.
           <br />
           <br />
           As for the project itself, it's open source and you can view the source code <a href='https://github.com/TheZoraiz/React-COVID19-Tracker'>here</a>
