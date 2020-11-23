@@ -7,11 +7,6 @@ import CustomChart from './components/CustomChart.js'
 import Loading from './components/Loading.js'
 const fetch = require('node-fetch');
 
-const promisedSleep = (timeout) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {resolve()}, timeout);
-  });
-}
 
 const fetchCountries = () => {
   return new Promise((resolve, reject) => {
@@ -47,7 +42,7 @@ const App = () => {
   const [ temp, setTemp ] = useState([]);
   const [ countries, setCountries ] = useState([]);
   const [ loading, setLoading ] = useState(true);
-  const [ chosenMonth, setChosenMonth ] = useState('November');
+  const [ chosenMonth, setChosenMonth ] = useState('');
   const [ chosenYear, setChosenYear ] = useState('2020');
   const [ yearlyDisplay, setYearlyDisplay ] = useState(false);
   
@@ -104,6 +99,8 @@ const App = () => {
           break;
       }
     });
+
+    setChosenMonth(formatted[formatted.length - 1].month);
     setAvailableYears(totalYears);
     return formatted;
   }
@@ -135,15 +132,13 @@ const App = () => {
   }
 
   useEffect(async() => {
-    // Show the loading icon some love :)
-    await promisedSleep(500);
-    
     let totalCountries = await fetchCountries()
 
+    // Because the data for united states is not showing up on the API, for some reason
     totalCountries = totalCountries.filter(element => element.slug != 'united-states');
 
     setCountries(totalCountries);
-    getCountryData({value: totalCountries[0].slug})
+    getCountryData({ value: totalCountries[0].slug })
   }, [])
 
   return (
@@ -155,9 +150,9 @@ const App = () => {
 
       <div className='selectors'>
         <div className='select-container select-country'>
-          <h3>Select Country</h3>
+          <h3>Select Country / Region</h3>
           <Select
-            options={ countries.map(country => ({value: country.slug, label: country.name}) )}
+            options={ countries.map(country => ({ value: country.slug, label: country.name }) )}
             onChange={ getCountryData }
           />
         </div>
@@ -198,7 +193,6 @@ const App = () => {
             
             <Select
               options={ availableYears.map(year => ({value: year, label: year}) ) }
-              defaultValue={{value: '2020', label: '2020'}}
               onChange={ (thing) => setChosenYear(thing.value)}
             />
           </section>
@@ -222,7 +216,7 @@ const App = () => {
       {loading && <Loading className='charts' text={'Loading...'} />}
 
       {visible &&
-        <div class='about'>
+        <div className='about'>
         <h2>About</h2>
         <p>
           The data used for the graphs in this project is publicly available
