@@ -203,16 +203,34 @@ const App = () => {
 
       {visible && !yearlyDisplay &&
         <div className='row'>
-        <CustomChart title={temp[0].name} type={'first'} graphData={temp.filter(element => element.date.month == chosenMonth && element.date.year == chosenYear)} dots={1.2}/>
-        <CustomChart title={temp[0].name} type={'second'} graphData={temp.filter(element => element.date.month == chosenMonth && element.date.year == chosenYear)} dots={1.2}/> 
+        <CustomChart
+          title={temp[0].name}
+          type={'first'}
+          graphData={temp.filter(element => element.date.month == chosenMonth && element.date.year == chosenYear)}
+          dotRadius={1.2}/>
+        <CustomChart
+          title={temp[0].name}
+          type={'second'}
+          graphData={temp.filter(element => element.date.month == chosenMonth && element.date.year == chosenYear)}
+          dotRadius={1.2}/> 
         </div>
       }
+
       {visible && yearlyDisplay &&
         <div className='row'>
-        <CustomChart title={temp[0].name} type={'first'} graphData={temp} dots={0}/>
-        <CustomChart title={temp[0].name} type={'second'} graphData={temp} dots={0}/> 
+        <CustomChart
+          title={temp[0].name}
+          type={'first'}
+          graphData={temp}
+          dotRadius={0}/>
+        <CustomChart
+          title={temp[0].name}
+          type={'second'}
+          graphData={temp}
+          dotRadius={0}/> 
         </div>
       }
+
       {loading && <Loading className='charts' text={'Loading...'} />}
 
       {visible &&
@@ -220,11 +238,11 @@ const App = () => {
         <h2>About</h2>
         <p>
           The data used for the graphs in this project is publicly available
-          and was obtained from the COVID 19 API <a href='https://covid19api.com'>here</a>.
+          and was obtained from the COVID 19 API <a href='https://covid19api.com' target='_blank'>here</a>.
           All credits for the data go to the source. Please visit their website and support them.
           <br />
           <br />
-          As for the project itself, it's open source and you can view the source code <a href='https://github.com/TheZoraiz/React-COVID19-Tracker'>here</a>
+          As for the project itself, it's open source and you can view the source code <a href='https://github.com/TheZoraiz/React-COVID19-Tracker' target='_blank'>here</a>
 
         </p>
       </div>}

@@ -3,13 +3,13 @@ import { Line } from 'react-chartjs-2'
 import { useState, useEffect } from 'react'
 
 
-function CustomChart({ title, graphData, type, dots }) {
+function CustomChart({ title, graphData, type, dotRadius }) {
   const [ sample, setSample ] = useState({});
   const [ typeBool ] = useState((type == 'first'))
 
   useEffect(() => {
     setSample({
-      labels: graphData.map(element => dots != 0 ? element.date.date : element.date.date.slice(3)),
+      labels: graphData.map(element => dotRadius != 0 ? element.date.date : element.date.date.slice(element.date.date.length - 4, element.date.date.length)),
       datasets: [
         {
           label: typeBool ? 'Total Cases To Date' : 'Active Cases',
@@ -17,7 +17,7 @@ function CustomChart({ title, graphData, type, dots }) {
           backgroundColor: 'rgba(1,1,1,0)',
           borderWidth: 2,
           borderColor: typeBool ? '#ff4040' : 'orange',
-          radius: dots,
+          radius: dotRadius,
         },
         {
           label: typeBool? 'Total Recoveries To Date' : 'Total Deaths',
@@ -25,7 +25,7 @@ function CustomChart({ title, graphData, type, dots }) {
           backgroundColor: 'rgba(1,1,1,0)',
           borderWidth: 2,
           borderColor: typeBool ? 'turquoise' : 'red',
-          radius: dots,
+          radius: dotRadius,
         },
       ]
     });
