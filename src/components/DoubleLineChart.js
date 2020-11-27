@@ -3,28 +3,29 @@ import { Line } from 'react-chartjs-2'
 import { useState, useEffect } from 'react'
 
 
-function CustomChart({ title, graphData, type, dotRadius }) {
+function DoubleLineChart({ title, firstLabel, secondLabel, graphData, type, dotRadius }) {
   const [ sample, setSample ] = useState({});
-  const [ typeBool ] = useState((type == 'first'))
 
   useEffect(() => {
     setSample({
-      labels: graphData.map(element => dotRadius != 0 ? element.date.date : element.date.date.slice(element.date.date.length - 4, element.date.date.length)),
+      labels: graphData.map(element => element.date.date),
       datasets: [
         {
-          label: typeBool ? 'Total Cases To Date' : 'Active Cases',
-          data: graphData.map(element => typeBool ? element.confirmed : element.active),
+          label: firstLabel,
+          // label: typeBool ? 'Total Cases To Date' : 'Active Cases',
+          data: graphData.map(element => element.confirmed),
           backgroundColor: 'rgba(1,1,1,0)',
           borderWidth: 2,
-          borderColor: typeBool ? '#ff4040' : 'orange',
+          borderColor: 'red',
           radius: dotRadius,
         },
         {
-          label: typeBool? 'Total Recoveries To Date' : 'Total Deaths',
-          data: graphData.map(element => typeBool ? element.recovered : element.deaths),
+          label: secondLabel,
+          // label: typeBool ? 'Total Recoveries To Date' : 'Total Deaths',
+          data: graphData.map(element => element.recovered),
           backgroundColor: 'rgba(1,1,1,0)',
           borderWidth: 2,
-          borderColor: typeBool ? 'turquoise' : 'red',
+          borderColor: 'turquoise',
           radius: dotRadius,
         },
       ]
@@ -33,7 +34,7 @@ function CustomChart({ title, graphData, type, dotRadius }) {
 
   return (
     <div className="chart">
-      <h2 className='country-title'>{typeBool ? `${title} Case History` : `${title} Current Cases`}</h2>
+      <h2 className='country-title'>{title}</h2>
       <Line
         data={sample}
         height={null}
@@ -53,4 +54,4 @@ function CustomChart({ title, graphData, type, dotRadius }) {
   );
 }
 
-export default CustomChart;
+export default DoubleLineChart;
