@@ -147,8 +147,9 @@ const App = () => {
         && element.date.monthNum == lastCase.date.monthNum
         && parseInt(element.date.day) <= parseInt(lastCase.date.day));
 
-      setTemp2(lastMonthDataCases);
+      setDefaultDates();
 
+      setTemp2(lastMonthDataCases);
       setVisible(true);
       setLoading(false);
 
@@ -223,6 +224,18 @@ const App = () => {
     setTemp2(arr);
   }
 
+  const setDefaultDates = () => {
+    let x = new Date();
+    let firstMonthDay = new Date(x.getFullYear(), x.getMonth(), 1);
+    
+    setFirstDate(firstMonthDay)
+
+    // So that you can't select a date BEFORE first date
+    let x2 = new Date(firstMonthDay.getTime());
+    x2.setDate(x2.getDate() + 2);
+    setSecondPickerMinDate(x2)
+  }
+
   useEffect(async() => {
     try {
       let totalCountries = await fetchCountries()
@@ -232,17 +245,9 @@ const App = () => {
 
       setCountries(totalCountries);
       
-      getCountryData({ value: totalCountries[0].slug })
-      
-      let x = new Date();
-      let firstMonthDay = new Date(x.getFullYear(), x.getMonth(), 1);
-      
-      setFirstDate(firstMonthDay)
+      getCountryData({ value: 'pakistan' })
 
-      // So that you can't select a date BEFORE first date
-      let x2 = new Date(firstMonthDay.getTime());
-      x2.setDate(x2.getDate() + 2);
-      setSecondPickerMinDate(x2)
+      setDefaultDates();
 
     } catch(e) {
       console.log(e);
@@ -254,99 +259,105 @@ const App = () => {
 
   return (
     <div className="App">
-      <h1 className='heading'>COVID-19 Tracker</h1>
-      <h2 id='daddy'>By Zoraiz</h2>
+      <div id='first-section'>
+        <h1 className='heading'>COVID-19 Tracker</h1>
+        <h3 id='daddy'>By Zoraiz</h3>
 
-      <hr style={{width: '95%'}}/>
+        <hr style={{width: '95%'}}/>
 
-      <div className='selectors'>
-        <div className='select-container'>
-          <h3>Select Country / Region</h3>
-          <Select
-            options={ countries.map(country => ({ value: country.slug, label: country.name }) )}
-            onChange={ getCountryData }
-          />
-        </div>
-        <div className='date-picker-wrapper'>
-          <div className='date-picker'>
-            <h3>From</h3>
-            <DatePicker
-              format='dd-MM-y'
-              onChange={onFirstDateChange}
-              value={firstDate}
-              clearIcon={null}
-              minDate={firstRecordDate}
-              maxDate={secondRecordDate}
-              className='picker'
+        <div className='selectors'>
+          <div className='select-container'>
+            <h3>Select Country / Region</h3>
+            <Select
+              options={ countries.map(country => ({ value: country.slug, label: country.name }) )}
+              defaultValue={ ({value: 'pakistan', label: 'Pakistan'}) }
+              onChange={ getCountryData }
             />
           </div>
-          <div className='date-picker'>
-            <h3>To</h3>
-            <DatePicker
-              format='dd-MM-y'
-              onChange={onSecondDateChange}
-              value={secondDate}
-              clearIcon={null}
-              minDate={secondPickerMinDate}
-              maxDate={secondRecordDate}
-              className='picker'
-            />
+          <div className='date-picker-wrapper'>
+            <div className='date-picker'>
+              <h3>From</h3>
+
+              <DatePicker
+                format='dd-MM-y'
+                onChange={onFirstDateChange}
+                value={firstDate}
+                clearIcon={null}
+                minDate={firstRecordDate}
+                maxDate={secondRecordDate}
+                className='picker'
+              />
             </div>
+            <div className='date-picker'>
+              <h3>To</h3>
+
+              <DatePicker
+                format='dd-MM-y'
+                onChange={onSecondDateChange}
+                value={secondDate}
+                clearIcon={null}
+                minDate={secondPickerMinDate}
+                maxDate={secondRecordDate}
+                className='picker'
+              />
+              </div>
+          </div>
         </div>
-      </div>
 
-      <hr style={{width: '95%'}}/>
+        <hr style={{width: '95%'}}/>
 
-      {visible &&
-        <div className='row'>
-          <DoubleLineChart
-            title={`${temp[0].name} Cases & Recoveries`}
-            firstLabel='Total Cases'
-            secondLabel='Total Recoveries'
-            graphData={temp2}
-            dotRadius={0}
-          />
-          <SingleLineChart
-            title={`${temp[0].name} Active Cases`}
-            type='Active'
-            label='Active Cases'
-            graphData={temp2}
-            color='orange'
-            dotRadius={0}
-          /> 
-          <SingleLineChart
-            title={`${temp[0].name} Total Deaths`}
-            type='Deaths'
-            label='Total Deaths'
-            graphData={temp2}
-            color='red'
-            dotRadius={0}
-          /> 
-        </div>
-      }
+        {visible &&
+          <div className='row'>
+            <DoubleLineChart
+              title={`${temp[0].name} Cases & Recoveries`}
+              firstLabel='Total Cases'
+              secondLabel='Total Recoveries'
+              graphData={temp2}
+              dotRadius={0}
+            />
+            <SingleLineChart
+              title={`${temp[0].name} Active Cases`}
+              type='Active'
+              label='Active Cases'
+              graphData={temp2}
+              color='orange'
+              dotRadius={0}
+            /> 
+            <SingleLineChart
+              title={`${temp[0].name} Total Deaths`}
+              type='Deaths'
+              label='Total Deaths'
+              graphData={temp2}
+              color='red'
+              dotRadius={0}
+            /> 
+          </div>
+        }
 
-      {loading && <Loading className='charts' text={'Loading...'} />}
+        {loading && <Loading className='charts' text={'Loading...'} />}
 
-      {error &&
-        <div className='error-wrapper'>
-          <h1>Error!</h1>
+        {error &&
+          <div className='error-wrapper'>
+            <h1>Error!</h1>
+            <p>
+              There was an error retrieving the data.
+              <br/>
+              Please refresh the page or try again after a few minutes.
+            </p>
+          </div>
+        }
+        <div className='about-wrapper'>
+          <h2>About</h2>
           <p>
-            There was an error retrieving the data.
-            Please refresh the page or try again after a few minutes.
+            The data used for the graphs in this project is publicly available
+            and was obtained from the COVID 19 API <a href='https://covid19api.com' target='_blank'>here</a>.
+            All credits for the data go to the source. Please visit their website and support them if you can.
+            <br />
+            <br />
+            The project is open source and you can view the source code <a href='https://github.com/TheZoraiz/React-COVID19-Tracker' target='_blank'>here</a>
+
           </p>
         </div>
-        }
-      <div className='about'>
-        <h2>About</h2>
-        <p>
-          The data used for the graphs in this project is publicly available
-          and was obtained from the COVID 19 API <a href='https://covid19api.com' target='_blank'>here</a>.
-          All credits for the data go to the source. Please visit their website and support them if you can.
-          <br />
-          <br />
-          The project is open source and you can view the source code <a href='https://github.com/TheZoraiz/React-COVID19-Tracker' target='_blank'>here</a>
-
-        </p>
       </div>
     </div>
   );
