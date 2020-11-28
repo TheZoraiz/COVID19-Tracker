@@ -261,7 +261,7 @@ const App = () => {
     <div className="App">
       <div id='first-section'>
         <h1 className='heading'>COVID-19 Tracker</h1>
-        <h3 id='daddy'>By Zoraiz</h3>
+        <h3 id='tagline'>Stay Home & Stay Safe</h3>
 
         <hr style={{width: '95%'}}/>
 
