@@ -1,7 +1,7 @@
 {
   "name": "covid-tracker",
   "version": "0.1.0",
-  "homepage": "https://TheZoraiz.github.io/React-COVID19-Tracker",
+  "homepage": "https://TheZoraiz.github.io/COVID19-Tracker",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
