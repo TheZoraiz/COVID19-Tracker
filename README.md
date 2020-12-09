@@ -1,7 +1,7 @@
 # COVID 19 Tracker
 
 You can use the tracker directly from this link:
-https://thezoraiz.github.io/React-COVID19-Tracker/
+https://TheZoraiz.github.io/COVID19-Tracker
 
 ## Credits
 The data used for the graphs in this project is publicly available and was obtained from the COVID 19 API [here](https://covid19api.com). All credits for the data go to the source. Please visit their website and support them if you can.
