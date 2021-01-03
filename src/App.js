@@ -110,7 +110,6 @@ const App = () => {
       }
     });
 
-    // console.log(formatted);
     return formatted;
   }
 
@@ -132,24 +131,21 @@ const App = () => {
       let formattedDates = alterDateFormat(oldDates);
 
       let i = 0;
-      dataCases = dataCases.map(element => ({...element, date: formattedDates[i++]}) );
+      dataCases = dataCases.map(element => ({...element, newDate: formattedDates[i++]}) );
 
       let firstCase = dataCases[0];
       let lastCase = dataCases[dataCases.length - 1];
 
-      setFirstRecordDate(new Date(`${firstCase.date.year}-${firstCase.date.monthNum}-${firstCase.date.day}`));
-      setSecondRecordDate(new Date(`${lastCase.date.year}-${lastCase.date.monthNum}-${lastCase.date.day}`));
+      setFirstRecordDate(new Date(`${firstCase.newDate.year}-${firstCase.newDate.monthNum}-${firstCase.newDate.day}`));
+      setSecondRecordDate(new Date(`${lastCase.newDate.year}-${lastCase.newDate.monthNum}-${lastCase.newDate.day}`));
+      
+      let lastMonthDataCases = dataCases.slice(dataCases.length - 30, dataCases.length);
 
       setTemp(dataCases);
 
-      // Selects the most recent month's cases
-      let lastMonthDataCases = dataCases.filter(element => element.date.year == lastCase.date.year
-        && element.date.monthNum == lastCase.date.monthNum
-        && parseInt(element.date.day) <= parseInt(lastCase.date.day));
-
-      setDefaultDates();
-
       setTemp2(lastMonthDataCases);
+      setDefaultDates(lastMonthDataCases);
+
       setVisible(true);
       setLoading(false);
 
@@ -166,8 +162,8 @@ const App = () => {
 
     // So that you can't select a date BEFORE first date
     let x = new Date(selectedDate.getTime());
-    x.setDate(x.getDate() + 2);
-    setSecondPickerMinDate(x)
+    x.setDate(x.getDate() + 1);
+    setSecondPickerMinDate(x);
 
     rangeSetter(selectedDate, null);
   }
@@ -194,46 +190,69 @@ const App = () => {
 
     let arr = [];
 
-    temp.forEach(element => {
-      let tempDay = parseInt(element.date.day);
-      let tempMonth = parseInt(element.date.monthNum);
-      let tempYear = parseInt(element.date.year);
-
-      if(tempMonth >= startMonth && tempMonth <= endMonth) {
-
-        if(tempYear >= startYear && tempYear <= endYear) {
-          if(startMonth != endMonth) {
-            if(tempMonth == startMonth) {
-              if(tempDay >= startDay)
-                arr.push(element)
-            } else if(tempMonth == endMonth) {
-              if(tempDay <= endDay)
-                arr.push(element);
-            } else {
+    // If selected years are different
+    if(startYear < endYear) {
+      temp.forEach(element => {
+        let tempDay = parseInt(element.newDate.day);
+        let tempMonth = parseInt(element.newDate.monthNum);
+        let tempYear = parseInt(element.newDate.year);
+        
+        if(tempYear == startYear) {
+          if(tempMonth == startMonth) {
+            if(tempDay >= startDay)
               arr.push(element);
-            }
-          } else {
-            if(tempDay >= startDay && tempDay <= endDay)
+          } else if(tempMonth >= startMonth)
+            arr.push(element);
+        } else if(tempYear >= startYear && tempYear < endYear) {
+          arr.push(element);
+        } else if(tempYear == endYear) {
+          if(tempMonth == endMonth) {
+            if(tempDay <= endDay)
               arr.push(element);
-          }
+          } else if(tempMonth <= endMonth)
+            arr.push(element);
         }
-      }
+      });
+    
+    // If selected years are same
+    } else {
+      temp.forEach(element => {
+        let tempDay = parseInt(element.newDate.day);
+        let tempMonth = parseInt(element.newDate.monthNum);
+        let tempYear = parseInt(element.newDate.year);
+  
+          if(tempMonth >= startMonth && tempMonth <= endMonth) {
+            if(startMonth != endMonth) {
+              if(tempMonth == startMonth) {
+                if(tempDay >= startDay)
+                  arr.push(element)
+              } else if(tempMonth == endMonth) {
+                if(tempDay <= endDay)
+                  arr.push(element);
+              } else {
+                arr.push(element);
+              }
+            } else {
+              if(tempDay >= startDay && tempDay <= endDay)
+                arr.push(element);
+            }
+          }
+      });
+    }
 
-    });
-    // console.log(arr);
     setTemp2(arr);
   }
 
-  const setDefaultDates = () => {
-    let x = new Date();
-    let firstMonthDay = new Date(x.getFullYear(), x.getMonth(), 1);
+  const setDefaultDates = (lastMonthDataCases) => {
+    let x = new Date(lastMonthDataCases[0].date);
+    let first = new Date(x.getFullYear(), x.getMonth(), 1);
     
-    setFirstDate(firstMonthDay)
+    setFirstDate(first);
 
     // So that you can't select a date BEFORE first date
-    let x2 = new Date(firstMonthDay.getTime());
-    x2.setDate(x2.getDate() + 2);
-    setSecondPickerMinDate(x2)
+    let x2 = new Date(first.getTime());
+    x2.setDate(x2.getDate() + 1);
+    setSecondPickerMinDate(x2);
   }
 
   useEffect(async() => {
@@ -246,8 +265,6 @@ const App = () => {
       setCountries(totalCountries);
       
       getCountryData({ value: 'pakistan' })
-
-      setDefaultDates();
 
     } catch(e) {
       console.log(e);
@@ -284,7 +301,7 @@ const App = () => {
                 value={firstDate}
                 clearIcon={null}
                 minDate={firstRecordDate}
-                maxDate={secondRecordDate}
+                maxDate={secondDate}
                 className='picker'
               />
             </div>

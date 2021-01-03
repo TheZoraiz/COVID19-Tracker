@@ -8,7 +8,7 @@ function SingleLineChart({ title, type, graphData, dotRadius, label, color }) {
 
   useEffect(() => {
     setSample({
-      labels: graphData.map(element => element.date.date),
+      labels: graphData.map(element => element.newDate.date),
       datasets: [
         {
             label: label,
