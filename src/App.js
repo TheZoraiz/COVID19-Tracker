@@ -172,7 +172,7 @@ const App = () => {
   const onSecondDateChange = (selectedDate) => {
 
     let y = new Date(selectedDate.getTime());
-    y.setDate(y.getDate() - 2);
+    y.setDate(y.getDate() - 1);
     setFirstPickerMaxDate(y);
 
     setSecondDate(selectedDate);
