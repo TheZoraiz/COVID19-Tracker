@@ -7,8 +7,9 @@ import ReactGA from 'react-ga';
 import DoubleLineChart from './components/DoubleLineChart.js'
 import Loading from './components/Loading.js'
 import SingleLineChart from './components/SingleLineChart';
-import { fetchCountries, fetchCountryData } from './components/FetchMethods.js';
-import { alterDateFormat, getDataInRange } from './components/OtherMethods.js';
+
+const { fetchCountries, fetchCountryData } = require('./components/FetchMethods.js');
+const { alterDateFormat, getDataInRange } = require('./components/OtherMethods.js');
 
 const App = () => {
   const [ visible, setVisible ] = useState(false);
