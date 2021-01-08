@@ -3,7 +3,15 @@ import { Line } from 'react-chartjs-2'
 import { useState, useEffect } from 'react'
 
 
-function SingleLineChart({ title, type, graphData, dotRadius, label, color }) {
+const SingleLineChart = ({ 
+  country,
+  title,
+  type,
+  graphData,
+  dotRadius,
+  label,
+  color,
+  }) => {
   const [ sample, setSample ] = useState({});
 
   useEffect(() => {
@@ -24,6 +32,7 @@ function SingleLineChart({ title, type, graphData, dotRadius, label, color }) {
 
   return (
     <div className="chart">
+      <h2 className='country-name'>{country}</h2>
       <h2 className='country-title'>{title}</h2>
       <Line
         data={sample}

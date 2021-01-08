@@ -3,7 +3,14 @@ import { Line } from 'react-chartjs-2'
 import { useState, useEffect } from 'react'
 
 
-function DoubleLineChart({ title, firstLabel, secondLabel, graphData, type, dotRadius }) {
+const DoubleLineChart = ({
+  country,
+  title,
+  firstLabel,
+  secondLabel,
+  graphData,
+  dotRadius,
+  }) => {
   const [ sample, setSample ] = useState({});
 
   useEffect(() => {
@@ -34,6 +41,7 @@ function DoubleLineChart({ title, firstLabel, secondLabel, graphData, type, dotR
 
   return (
     <div className="chart">
+      <h2 className='country-name'>{country}</h2>
       <h2 className='country-title'>{title}</h2>
       <Line
         data={sample}

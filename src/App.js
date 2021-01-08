@@ -16,7 +16,6 @@ const fetchCountries = () => {
     fetch('https://api.covid19api.com/summary')
       .then(res => res.json())
       .then(json => {
-        console.log(json);
         json = json.Countries;
         // Array of objects with country names and slugs
         let totalCountries = json.map(element => ({name: element.Country, slug: element.Slug}) );
@@ -52,6 +51,7 @@ const App = () => {
   const [ firstRecordDate, setFirstRecordDate ] = useState();
   const [ secondRecordDate, setSecondRecordDate ] = useState();
   const [ secondPickerMinDate, setSecondPickerMinDate ] = useState(null);
+  const [ firstPickerMaxDate, setFirstPickerMaxDate ] = useState(null);
 
   const [ firstDate, setFirstDate ] = useState(new Date());
   const [ secondDate, setSecondDate ] = useState(new Date());
@@ -163,12 +163,18 @@ const App = () => {
     // So that you can't select a date BEFORE first date
     let x = new Date(selectedDate.getTime());
     x.setDate(x.getDate() + 1);
+    // console.log('Lower Limit: ', x);
     setSecondPickerMinDate(x);
 
     rangeSetter(selectedDate, null);
   }
 
   const onSecondDateChange = (selectedDate) => {
+
+    let y = new Date(selectedDate.getTime());
+    y.setDate(y.getDate() - 2);
+    setFirstPickerMaxDate(y);
+
     setSecondDate(selectedDate);
     rangeSetter(null, selectedDate);
   }
@@ -178,7 +184,7 @@ const App = () => {
     if(first == null)
       first = firstDate;
     else if (second == null)
-      second = secondDate;    
+      second = secondDate;
     
     let startDay = first.getDate();
     let startMonth = first.getMonth() + 1;
@@ -219,24 +225,23 @@ const App = () => {
       temp.forEach(element => {
         let tempDay = parseInt(element.newDate.day);
         let tempMonth = parseInt(element.newDate.monthNum);
-        let tempYear = parseInt(element.newDate.year);
   
-          if(tempMonth >= startMonth && tempMonth <= endMonth) {
-            if(startMonth != endMonth) {
-              if(tempMonth == startMonth) {
-                if(tempDay >= startDay)
-                  arr.push(element)
-              } else if(tempMonth == endMonth) {
-                if(tempDay <= endDay)
-                  arr.push(element);
-              } else {
+        if(tempMonth >= startMonth && tempMonth <= endMonth) {
+          if(startMonth != endMonth) {
+            if(tempMonth == startMonth) {
+              if(tempDay >= startDay)
+                arr.push(element)
+            } else if(tempMonth == endMonth) {
+              if(tempDay <= endDay)
                 arr.push(element);
-              }
             } else {
-              if(tempDay >= startDay && tempDay <= endDay)
-                arr.push(element);
+              arr.push(element);
             }
+          } else {
+            if(tempDay >= startDay && tempDay <= endDay)
+              arr.push(element);
           }
+        }
       });
     }
 
@@ -244,15 +249,20 @@ const App = () => {
   }
 
   const setDefaultDates = (lastMonthDataCases) => {
-    let x = new Date(lastMonthDataCases[0].date);
-    let first = new Date(x.getFullYear(), x.getMonth(), 1);
     
-    setFirstDate(first);
+    let first = new Date(lastMonthDataCases[0].date);
+    let second = new Date(lastMonthDataCases[lastMonthDataCases.length - 1].date);
+    
 
-    // So that you can't select a date BEFORE first date
-    let x2 = new Date(first.getTime());
-    x2.setDate(x2.getDate() + 1);
-    setSecondPickerMinDate(x2);
+    let tempFirst = new Date(lastMonthDataCases[0].date);
+    setFirstDate(tempFirst);
+    
+    // Setting date limits for each date-picker
+    first.setDate(first.getDate() + 1);
+    second.setDate(second.getDate() - 1);
+
+    setSecondPickerMinDate(first);
+    setFirstPickerMaxDate(second);
   }
 
   useEffect(async() => {
@@ -301,7 +311,7 @@ const App = () => {
                 value={firstDate}
                 clearIcon={null}
                 minDate={firstRecordDate}
-                maxDate={secondDate}
+                maxDate={firstPickerMaxDate}
                 className='picker'
               />
             </div>
@@ -326,14 +336,16 @@ const App = () => {
         {visible &&
           <div className='row'>
             <DoubleLineChart
-              title={`${temp[0].name} Cases & Recoveries`}
+              country={temp[0].name}
+              title={'Cases & Recoveries'}
               firstLabel='Total Cases'
               secondLabel='Total Recoveries'
               graphData={temp2}
               dotRadius={0}
             />
             <SingleLineChart
-              title={`${temp[0].name} Active Cases`}
+              country={temp[0].name}
+              title={'Active Cases'}
               type='Active'
               label='Active Cases'
               graphData={temp2}
@@ -341,7 +353,8 @@ const App = () => {
               dotRadius={0}
             /> 
             <SingleLineChart
-              title={`${temp[0].name} Total Deaths`}
+              country={temp[0].name}
+              title={'Total Deaths'}
               type='Deaths'
               label='Total Deaths'
               graphData={temp2}
