@@ -8,38 +8,9 @@ import DoubleLineChart from './components/DoubleLineChart.js'
 import Loading from './components/Loading.js'
 import SingleLineChart from './components/SingleLineChart';
 
-const fetch = require('node-fetch');
-
-const fetchCountries = () => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => reject('Error!'), 10000);
-    fetch('https://api.covid19api.com/summary')
-      .then(res => res.json())
-      .then(json => {
-        json = json.Countries;
-        // Array of objects with country names and slugs
-        let totalCountries = json.map(element => ({name: element.Country, slug: element.Slug}) );
-        resolve([...totalCountries]);
-      })
-      .catch(error => {
-        setTimeout(() => reject(error), 5000);
-      });
-  }); 
-}
-
-const fetchCountryData = (country) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => reject('Error!'), 5000);
-    fetch(`https://api.covid19api.com/country/${country}`)
-      .then(res => res.json())
-      .then(json => {
-        resolve([...json]);
-      })
-      .catch(error => {
-        reject(error);
-      });
-  }); 
-}
+const { fetchCountries, fetchCountryData } = require('./fetchMethods.js')
+const utilMethods = require('./utilMethods.js')
+const Constants = require('./Constants.js')
 
 const App = () => {
   const [ visible, setVisible ] = useState(false);
@@ -56,105 +27,60 @@ const App = () => {
   const [ firstDate, setFirstDate ] = useState(new Date());
   const [ secondDate, setSecondDate ] = useState(new Date());
 
+  const [ showMessage, setShowMessage ] = useState(false)
   const [ error, setError ] = useState(false);
 
-  const alterDateFormat = (dates) => {
-    let formatted = [];
-    let totalYears = [];
+  const getCountryData = async(country) => {
+    let data;
+    try {
+      data = await fetchCountryData(Constants.officialAPICountry, country.value);
+      console.log('Official')
+      setShowMessage(false);
+    } catch(e) {
+      try {
+        data = await fetchCountryData(Constants.backupServerURL, country.value);
+        console.log('Backup')
+        setShowMessage(true)
+      } catch(e) {
+        setError(true);
+        setVisible(false);
+        setLoading(false);
+        return;
+      }
+    }
 
-    dates.forEach(date => {
-        let day = date.slice(8, date.length);
-        let month = date.slice(5, 7);
-        let year = date.slice(0, 4);
-
-        if(totalYears[totalYears.length - 1] !== year)
-        totalYears.push(year);
-
-        switch(month) {
-        case '01':
-            formatted.push({month: 'January', monthNum: '01', year: year, day: day, date: `${day} Jan ${year}`});
-            break;
-        case '02':
-            formatted.push({month: 'February', monthNum: '02', year: year, day: day, date: `${day} Feb ${year}`});
-            break;
-        case '03':
-            formatted.push({month: 'March', monthNum: '03', year: year, day: day, date: `${day} March ${year}`});
-            break;
-        case '04':
-            formatted.push({month: 'April', monthNum: '04', year: year, day: day, date: `${day} April ${year}`});
-            break;
-        case '05':
-            formatted.push({month: 'May', monthNum: '05', year: year, day: day, date: `${day} May ${year}`});
-            break;
-        case '06':
-            formatted.push({month: 'June', monthNum: '06', year: year, day: day, date: `${day} June ${year}`});
-            break;
-        case '07':
-            formatted.push({month: 'July', monthNum: '07', year: year, day: day, date: `${day} July ${year}`});
-            break;
-        case '08':
-            formatted.push({month: 'August', monthNum: '08', year: year, day: day, date: `${day} Aug ${year}`});
-            break;
-        case '09':
-            formatted.push({month: 'September', monthNum: '09', year: year, day: day, date: `${day} Sept ${year}`});
-            break;
-        case '10':
-            formatted.push({month: 'October', monthNum: '10', year: year, day: day, date: `${day} Oct ${year}`});
-            break;
-        case '11':
-            formatted.push({month: 'November', monthNum: '11', year: year, day: day, date: `${day} Nov ${year}`});
-            break;
-        case '12':
-            formatted.push({month: 'December', monthNum: '12', year: year, day: day, date: `${day} Dec ${year}`});
-            break;
-        }
+    let dataCases = data.map(element => {
+      return {
+        name: element.Country,
+        confirmed: element.Confirmed,
+        recovered: element.Recovered,
+        active: element.Active,
+        deaths: element.Deaths,
+        date: element.Date.slice(0, 10),
+      }
     });
 
-    return formatted;
-  }
+    let oldDates = dataCases.map(element => element.date);
+    let formattedDates = utilMethods.alterDateFormat(oldDates);
 
-  const getCountryData = async(country) => {
-    try {
-      let data = await fetchCountryData(country.value);
-      let dataCases = data.map(element => {
-        return {
-          name: element.Country,
-          confirmed: element.Confirmed,
-          recovered: element.Recovered,
-          active: element.Active,
-          deaths: element.Deaths,
-          date: element.Date.slice(0, 10),
-        }
-      });
+    let i = 0;
+    dataCases = dataCases.map(element => ({...element, newDate: formattedDates[i++]}) );
 
-      let oldDates = dataCases.map(element => element.date);
-      let formattedDates = alterDateFormat(oldDates);
+    let firstCase = dataCases[0];
+    let lastCase = dataCases[dataCases.length - 1];
 
-      let i = 0;
-      dataCases = dataCases.map(element => ({...element, newDate: formattedDates[i++]}) );
+    setFirstRecordDate(new Date(`${firstCase.newDate.year}-${firstCase.newDate.monthNum}-${firstCase.newDate.day}`));
+    setSecondRecordDate(new Date(`${lastCase.newDate.year}-${lastCase.newDate.monthNum}-${lastCase.newDate.day}`));
+    
+    let lastMonthDataCases = dataCases.slice(dataCases.length - 30, dataCases.length);
 
-      let firstCase = dataCases[0];
-      let lastCase = dataCases[dataCases.length - 1];
+    setTemp(dataCases);
 
-      setFirstRecordDate(new Date(`${firstCase.newDate.year}-${firstCase.newDate.monthNum}-${firstCase.newDate.day}`));
-      setSecondRecordDate(new Date(`${lastCase.newDate.year}-${lastCase.newDate.monthNum}-${lastCase.newDate.day}`));
-      
-      let lastMonthDataCases = dataCases.slice(dataCases.length - 30, dataCases.length);
+    setTemp2(lastMonthDataCases);
+    setDefaultDates(lastMonthDataCases);
 
-      setTemp(dataCases);
-
-      setTemp2(lastMonthDataCases);
-      setDefaultDates(lastMonthDataCases);
-
-      setVisible(true);
-      setLoading(false);
-
-    } catch(e) {
-      console.log(e);
-      setError(true);
-      setVisible(false);
-      setLoading(false);
-    }
+    setVisible(true);
+    setLoading(false);
   }
 
   const onFirstDateChange = (selectedDate) => {
@@ -166,7 +92,7 @@ const App = () => {
     // console.log('Lower Limit: ', x);
     setSecondPickerMinDate(x);
 
-    rangeSetter(selectedDate, null);
+    setTemp2(utilMethods.rangeSetter(selectedDate, null, firstDate, secondDate, temp))
   }
 
   const onSecondDateChange = (selectedDate) => {
@@ -176,79 +102,7 @@ const App = () => {
     setFirstPickerMaxDate(y);
 
     setSecondDate(selectedDate);
-    rangeSetter(null, selectedDate);
-  }
-
-  const rangeSetter = (first, second) => {
-    // Condition because state changers don't immediatelly alter state
-    if(first == null)
-      first = firstDate;
-    else if (second == null)
-      second = secondDate;
-    
-    let startDay = first.getDate();
-    let startMonth = first.getMonth() + 1;
-    let startYear = first.getFullYear();
-
-    let endDay = second.getDate();
-    let endMonth = second.getMonth() + 1;
-    let endYear = second.getFullYear();
-
-    let arr = [];
-
-    // If selected years are different
-    if(startYear < endYear) {
-      temp.forEach(element => {
-        let tempDay = parseInt(element.newDate.day);
-        let tempMonth = parseInt(element.newDate.monthNum);
-        let tempYear = parseInt(element.newDate.year);
-        
-        if(tempYear == startYear) {
-          if(tempMonth == startMonth) {
-            if(tempDay >= startDay)
-              arr.push(element);
-          } else if(tempMonth >= startMonth)
-            arr.push(element);
-        } else if(tempYear >= startYear && tempYear < endYear) {
-          arr.push(element);
-        } else if(tempYear == endYear) {
-          if(tempMonth == endMonth) {
-            if(tempDay <= endDay)
-              arr.push(element);
-          } else if(tempMonth <= endMonth)
-            arr.push(element);
-        }
-      });
-    
-    // If selected years are same
-    } else {
-      temp.forEach(element => {
-        let tempDay = parseInt(element.newDate.day);
-        let tempMonth = parseInt(element.newDate.monthNum);
-        let tempYear = parseInt(element.newDate.year);
-  
-        if(tempYear == endYear) {
-          if(tempMonth >= startMonth && tempMonth <= endMonth) {
-            if(startMonth != endMonth) {
-              if(tempMonth == startMonth) {
-                if(tempDay >= startDay)
-                  arr.push(element)
-              } else if(tempMonth == endMonth) {
-                if(tempDay <= endDay)
-                  arr.push(element);
-              } else {
-                arr.push(element);
-              }
-            } else {
-              if(tempDay >= startDay && tempDay <= endDay)
-                arr.push(element);
-            }
-          }
-        }
-      });
-    }
-
-    setTemp2(arr);
+    setTemp2(utilMethods.rangeSetter(null, selectedDate, firstDate, secondDate, temp))
   }
 
   const setDefaultDates = (lastMonthDataCases) => {
@@ -269,11 +123,24 @@ const App = () => {
   }
 
   useEffect(async() => {
-    ReactGA.initialize('UA-183443755-2');
+    ReactGA.initialize(Constants.GoogleAnalyticsKey);
     ReactGA.pageview('/');
 
+    let totalCountries;
     try {
-      let totalCountries = await fetchCountries()
+      totalCountries = await fetchCountries(Constants.officialAPI);
+      setShowMessage(false);
+    } catch(e) {
+      try {
+        totalCountries = await fetchCountries(Constants.backupServerCountriesURL);
+        setShowMessage(true);
+      } catch(e) {
+        setError(true);
+        setVisible(false);
+        setLoading(false);
+        return;
+      }
+    }
 
       // Because the data for united states is not showing up on the API, for some reason
       totalCountries = totalCountries.filter(element => element.slug != 'united-states');
@@ -282,12 +149,6 @@ const App = () => {
       
       getCountryData({ value: 'pakistan' })
 
-    } catch(e) {
-      console.log(e);
-      setError(true);
-      setVisible(false);
-      setLoading(false);
-    }
   }, [])
 
   return (
@@ -338,6 +199,12 @@ const App = () => {
         </div>
 
         <hr style={{width: '95%'}}/>
+        {showMessage &&
+          <div>
+            <p className='warningMessage'>Data fetched from the backup server because the offciial API is unresponsive </p>
+            <p className='warningMessage'>(Latest dates may not be available) </p>
+          </div>
+        }
 
         {visible &&
           <div className='row'>
@@ -376,7 +243,8 @@ const App = () => {
           <div className='error-wrapper'>
             <h1>Error!</h1>
             <p>
-              There was an error retrieving the data.
+              There was an error retrieving the data. Both the official API and backup server seem to be unresponsive.
+              <br/>
               <br/>
               Please refresh the page or try again after a few minutes.
             </p>
