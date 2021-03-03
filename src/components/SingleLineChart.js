@@ -20,7 +20,7 @@ const SingleLineChart = ({
       datasets: [
         {
             label: label,
-            data: graphData.map(element => type == 'Active' ? element.active : element.deaths),
+            data: graphData.map(element => type === 'Active' ? element.active : element.deaths),
             backgroundColor: 'rgba(1,1,1,0)',
             borderWidth: 2,
             borderColor: color,

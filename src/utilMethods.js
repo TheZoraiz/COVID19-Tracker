@@ -55,9 +55,9 @@ const alterDateFormat = (dates) => {
 
 const rangeSetter = (first, second, firstDate, secondDate, temp) => {
     // Condition because state changers don't immediatelly alter state
-    if(first == null)
+    if(first === null)
         first = firstDate;
-    else if (second == null)
+    else if (second === null)
         second = secondDate;
 
     let startDay = first.getDate();
@@ -77,16 +77,16 @@ const rangeSetter = (first, second, firstDate, secondDate, temp) => {
             let tempMonth = parseInt(element.newDate.monthNum);
             let tempYear = parseInt(element.newDate.year);
             
-            if(tempYear == startYear) {
-                if(tempMonth == startMonth) {
+            if(tempYear === startYear) {
+                if(tempMonth === startMonth) {
                     if(tempDay >= startDay)
                         arr.push(element);
                     } else if(tempMonth >= startMonth)
                         arr.push(element);
             } else if(tempYear >= startYear && tempYear < endYear) {
                 arr.push(element);
-            } else if(tempYear == endYear) {
-                if(tempMonth == endMonth) {
+            } else if(tempYear === endYear) {
+                if(tempMonth === endMonth) {
                     if(tempDay <= endDay)
                         arr.push(element);
                 } else if(tempMonth <= endMonth)
@@ -101,13 +101,13 @@ const rangeSetter = (first, second, firstDate, secondDate, temp) => {
             let tempMonth = parseInt(element.newDate.monthNum);
             let tempYear = parseInt(element.newDate.year);
 
-            if(tempYear == endYear) {
+            if(tempYear === endYear) {
                 if(tempMonth >= startMonth && tempMonth <= endMonth) {
-                    if(startMonth != endMonth) {
-                        if(tempMonth == startMonth) {
+                    if(startMonth !== endMonth) {
+                        if(tempMonth === startMonth) {
                             if(tempDay >= startDay)
                                 arr.push(element)
-                        } else if(tempMonth == endMonth) {
+                        } else if(tempMonth === endMonth) {
                             if(tempDay <= endDay)
                                 arr.push(element);
                         } else {
@@ -125,7 +125,7 @@ const rangeSetter = (first, second, firstDate, secondDate, temp) => {
     return arr
 }
 
-module.exports = {
+export {
     alterDateFormat,
     rangeSetter,
 }

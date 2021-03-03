@@ -22,11 +22,9 @@ const fetchCountryData = (url, country) => {
     setTimeout(() => reject('Error!'), 5000);
     fetch(`${url}${country}`)
       .then(res => {
-        console.log(res)
         return res.json()
       })
       .then(json => {
-        console.log(json)
         resolve([...json]);
       })
       .catch(error => {
@@ -35,7 +33,7 @@ const fetchCountryData = (url, country) => {
   }); 
 }
 
-module.exports = {
+export {
     fetchCountries,
     fetchCountryData,
 }

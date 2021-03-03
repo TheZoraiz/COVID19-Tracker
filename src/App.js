@@ -8,8 +8,8 @@ import DoubleLineChart from './components/DoubleLineChart.js'
 import Loading from './components/Loading.js'
 import SingleLineChart from './components/SingleLineChart';
 
-const { fetchCountries, fetchCountryData } = require('./fetchMethods.js')
-const utilMethods = require('./utilMethods.js')
+import { fetchCountries, fetchCountryData } from './fetchMethods.js';
+import { alterDateFormat, rangeSetter } from './utilMethods.js';
 const Constants = require('./Constants.js')
 
 const App = () => {
@@ -31,15 +31,18 @@ const App = () => {
   const [ error, setError ] = useState(false);
 
   const getCountryData = async(country) => {
+    ReactGA.event({
+      category: 'User',
+      action: `Changed country to ${country.value}`,
+    });
+
     let data;
     try {
       data = await fetchCountryData(Constants.officialAPICountry, country.value);
-      console.log('Official')
       setShowMessage(false);
     } catch(e) {
       try {
         data = await fetchCountryData(Constants.backupServerURL, country.value);
-        console.log('Backup')
         setShowMessage(true)
       } catch(e) {
         setError(true);
@@ -61,7 +64,7 @@ const App = () => {
     });
 
     let oldDates = dataCases.map(element => element.date);
-    let formattedDates = utilMethods.alterDateFormat(oldDates);
+    let formattedDates = alterDateFormat(oldDates);
 
     let i = 0;
     dataCases = dataCases.map(element => ({...element, newDate: formattedDates[i++]}) );
@@ -84,6 +87,11 @@ const App = () => {
   }
 
   const onFirstDateChange = (selectedDate) => {
+    ReactGA.event({
+      category: 'User',
+      action: `Changed starting date to ${selectedDate.toLocaleString().slice(0,8)}`
+    });
+
     setFirstDate(selectedDate);
 
     // So that you can't select a date BEFORE first date
@@ -92,17 +100,21 @@ const App = () => {
     // console.log('Lower Limit: ', x);
     setSecondPickerMinDate(x);
 
-    setTemp2(utilMethods.rangeSetter(selectedDate, null, firstDate, secondDate, temp))
+    setTemp2(rangeSetter(selectedDate, null, firstDate, secondDate, temp))
   }
 
   const onSecondDateChange = (selectedDate) => {
+    ReactGA.event({
+      category: 'User',
+      action: `Changed ending date to ${selectedDate.toLocaleString().slice(0,8)}`
+    });
 
     let y = new Date(selectedDate.getTime());
     y.setDate(y.getDate() - 1);
     setFirstPickerMaxDate(y);
 
     setSecondDate(selectedDate);
-    setTemp2(utilMethods.rangeSetter(null, selectedDate, firstDate, secondDate, temp))
+    setTemp2(rangeSetter(null, selectedDate, firstDate, secondDate, temp))
   }
 
   const setDefaultDates = (lastMonthDataCases) => {
@@ -123,8 +135,9 @@ const App = () => {
   }
 
   useEffect(async() => {
-    ReactGA.initialize(Constants.GoogleAnalyticsKey);
+    ReactGA.initialize(Constants.GoogleAnalyticsTag);
     ReactGA.pageview('/');
+    console.log('Google Analytics Connected')
 
     let totalCountries;
     try {
@@ -254,12 +267,26 @@ const App = () => {
           <h2>About</h2>
           <p>
             The data used for the graphs in this project is publicly available
-            and was obtained from the COVID 19 API <a href='https://covid19api.com' target='_blank'>here</a>.
+            and was obtained from the COVID 19 API <a href='https://covid19api.com' target='_blank' onClick={()=> 
+                ReactGA.event({
+                  category: 'User',
+                  action: 'Clicked official API\'s link'
+                })
+            }>here</a>.
             All credits for the data go to the source. Please visit their website and support them if you can.
             <br />
             <br />
-            The project is open source and you can view the source code <a href='https://github.com/TheZoraiz/React-COVID19-Tracker' target='_blank'>here</a>
-
+            The project is open source and you can view the front-end code <a href='https://github.com/TheZoraiz/React-COVID19-Tracker' target='_blank' onClick={()=> 
+                ReactGA.event({
+                  category: 'User',
+                  action: 'Clicked frontend link'
+                })
+            }>here</a> and the backup server's code <a href='https://github.com/TheZoraiz/COVID19-Tracker-Backend' target='_blank' onClick={()=> 
+                ReactGA.event({
+                  category: 'User',
+                  action: 'Clicked backup server\'s link'
+                })
+        }>here</a>
           </p>
         </div>
       </div>

@@ -1,6 +1,6 @@
 {
   "name": "covid-tracker",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "homepage": "https://TheZoraiz.github.io/COVID19-Tracker",
   "private": true,
   "dependencies": {

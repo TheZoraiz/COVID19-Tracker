@@ -3,6 +3,8 @@
 You can use the tracker directly from this link:
 https://TheZoraiz.github.io/COVID19-Tracker
 
+The code for the backup server can is available here: https://github.com/TheZoraiz/COVID19-Tracker-Backend
+
 ## Credits
 The data used for the graphs in this project is publicly available and was obtained from the COVID 19 API [here](https://covid19api.com). All credits for the data go to the source. Please visit their website and support them if you can.
 
