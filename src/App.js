@@ -213,7 +213,7 @@ const App = () => {
         <hr style={{width: '95%'}}/>
         {showMessage &&
           <div>
-            <p className='warningMessage'>Data fetched from the backup server because the offciial API is unresponsive </p>
+            <p className='warningMessage'>Data fetched from the backup server because the official API threw an error</p>
             <p className='warningMessage'>(Latest dates may not be available) </p>
           </div>
         }
@@ -275,7 +275,7 @@ const App = () => {
             All credits for the data go to the source. Please visit their website and support them if you can.
             <br />
             <br />
-            The project is open source and you can view the front-end code <a href='https://github.com/TheZoraiz/React-COVID19-Tracker' target='_blank' onClick={()=> 
+            The project is open source and you can view the front end code <a href='https://github.com/TheZoraiz/React-COVID19-Tracker' target='_blank' onClick={()=> 
                 ReactGA.event({
                   category: 'User',
                   action: 'Clicked frontend link'
@@ -285,7 +285,7 @@ const App = () => {
                   category: 'User',
                   action: 'Clicked backup server\'s link'
                 })
-        }>here</a>
+        }>here.</a>
           </p>
         </div>
       </div>
