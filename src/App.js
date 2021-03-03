@@ -45,11 +45,19 @@ const App = () => {
         data = await fetchCountryData(Constants.backupServerURL, country.value);
         setShowMessage(true)
       } catch(e) {
+        ReactGA.event({
+          category: 'User',
+          action: 'Fetching per country backup failed'
+        })
         setError(true);
         setVisible(false);
         setLoading(false);
         return;
       }
+      ReactGA.event({
+        category: 'User',
+        action: 'Fetching per country API failed'
+      })
     }
 
     let dataCases = data.map(element => {
@@ -147,11 +155,19 @@ const App = () => {
         totalCountries = await fetchCountries(Constants.backupServerCountriesURL);
         setShowMessage(true);
       } catch(e) {
+        ReactGA.event({
+          category: 'User',
+          action: 'Fetching countries backup server failed'
+        })
         setError(true);
         setVisible(false);
         setLoading(false);
         return;
       }
+      ReactGA.event({
+        category: 'User',
+        action: 'Fetching countries API failed'
+      })
     }
 
       // Because the data for united states is not showing up on the API, for some reason
