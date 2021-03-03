@@ -89,7 +89,7 @@ const App = () => {
   const onFirstDateChange = (selectedDate) => {
     ReactGA.event({
       category: 'User',
-      action: `Changed starting date to ${selectedDate.toLocaleString().slice(0,8)}`
+      action: `Changed starting date to ${selectedDate.toLocaleString()}`
     });
 
     setFirstDate(selectedDate);
@@ -106,7 +106,7 @@ const App = () => {
   const onSecondDateChange = (selectedDate) => {
     ReactGA.event({
       category: 'User',
-      action: `Changed ending date to ${selectedDate.toLocaleString().slice(0,8)}`
+      action: `Changed ending date to ${selectedDate.toLocaleString()}`
     });
 
     let y = new Date(selectedDate.getTime());
@@ -137,7 +137,6 @@ const App = () => {
   useEffect(async() => {
     ReactGA.initialize(Constants.GoogleAnalyticsTag);
     ReactGA.pageview('/');
-    console.log('Google Analytics Connected')
 
     let totalCountries;
     try {
