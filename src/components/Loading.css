@@ -1,8 +1,20 @@
-.loading {
+.loadingWrapper {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 150px;
+}
+
+.loading {
+    height: 80%;
+    width: 130px;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     font-weight: bold;
+    background-color: lightgray;
 }

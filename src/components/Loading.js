@@ -4,14 +4,16 @@ import Loader from 'react-loader-spinner'
 
 function Loading({ text }) {
   return (
-    <div className="loading">
-      <Loader
-         type='Oval'
-         color="black"
-         height={70}
-         width={70}
-      />
-      {text}
+    <div className="loadingWrapper">
+      <div className="loading">
+        <Loader
+          type='Oval'
+          color="black"
+          height={70}
+          width={70}
+        />
+        {text}
+      </div>
     </div>
   );
 }

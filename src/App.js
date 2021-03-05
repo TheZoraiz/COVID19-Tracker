@@ -31,6 +31,7 @@ const App = () => {
   const [ error, setError ] = useState(false);
 
   const getCountryData = async(country) => {
+    setLoading(true)
     ReactGA.event({
       category: 'User',
       action: `Changed country to ${country.value}`,
@@ -92,6 +93,7 @@ const App = () => {
 
     setVisible(true);
     setLoading(false);
+    document.getElementsByClassName('about-wrapper')[0].style.marginTop = '20px';
   }
 
   const onFirstDateChange = (selectedDate) => {
@@ -176,7 +178,6 @@ const App = () => {
       setCountries(totalCountries);
       
       getCountryData({ value: 'pakistan' })
-
   }, [])
 
   return (
@@ -234,6 +235,9 @@ const App = () => {
           </div>
         }
 
+        {loading && <Loading className='charts' text={'Loading...'} />}
+
+
         {visible &&
           <div className='row'>
             <DoubleLineChart
@@ -264,8 +268,6 @@ const App = () => {
             /> 
           </div>
         }
-
-        {loading && <Loading className='charts' text={'Loading...'} />}
 
         {error &&
           <div className='error-wrapper'>
