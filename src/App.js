@@ -69,11 +69,59 @@ const App = () => {
         active: element.Active,
         deaths: element.Deaths,
         date: element.Date.slice(0, 10),
+        province: element.Province,
       }
     });
 
+
+    let filtered = dataCases.filter(element => element.province === '');
+    if(filtered.length == 0) {  
+
+      let tempDate = dataCases[0].date;
+      let part = [];
+      dataCases.forEach(element => {
+        if(element.date == tempDate)
+          part.push(element);
+        else {
+          tempDate = element.date;
+          filtered.push([...part]);
+          part = [];
+        }
+      })
+      
+      let moreFiltered = [];
+
+      console.log(filtered);
+      filtered.forEach(array => {
+        let tempCase = {
+          confirmed: 0,
+          recovered: 0,
+          active: 0,
+          deaths: 0,
+        };
+        array.forEach(element => {
+          tempCase = {
+            ...element,
+            confirmed: tempCase.confirmed + element.confirmed,
+            recovered: tempCase.recovered + element.confirmed,
+            active: tempCase.active + element.active,
+            deaths: tempCase.deaths + element.deaths,
+          }
+        })
+        moreFiltered.push(tempCase);
+        tempCase = {};
+      })
+      dataCases = [...moreFiltered];
+    } else {
+      dataCases = [...filtered];
+    }
+
+    // console.log(filtered)
+    // dataCases = [...filtered]
+
     let oldDates = dataCases.map(element => element.date);
     let formattedDates = alterDateFormat(oldDates);
+
 
     let i = 0;
     dataCases = dataCases.map(element => ({...element, newDate: formattedDates[i++]}) );
