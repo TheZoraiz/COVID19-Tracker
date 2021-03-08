@@ -200,10 +200,12 @@ const App = () => {
     try {
       totalCountries = await fetchCountries(Constants.officialAPI);
       setShowMessage(false);
+      setError(false);
     } catch(e) {
       try {
         totalCountries = await fetchCountries(Constants.backupServerCountriesURL);
         setShowMessage(true);
+        setError(false);
       } catch(e) {
         ReactGA.event({
           category: 'User',
@@ -212,6 +214,7 @@ const App = () => {
         setError(true);
         setVisible(false);
         setLoading(false);
+        document.getElementsByClassName('about-wrapper')[0].style.marginTop = '20px';
         return;
       }
       ReactGA.event({
@@ -329,9 +332,9 @@ const App = () => {
           </div>
         }
         <div className='about-wrapper'>
-          <p id='note'>Note: Any irregularities in the graphs are solely caused by data fetched from the API.
-            Countries with separate data for each province have different provinces' numbers added into a single date.</p>
           <h2>About</h2>
+          <p>Note: Any irregularities in the graphs are solely caused by data fetched from the API.
+            Countries with separate data for each province have different provinces' numbers added into a single date.</p>
           <p>
             The data used for the graphs in this project is publicly available
             and was obtained from the COVID 19 API <a href='https://covid19api.com' target='_blank' onClick={()=> 
