@@ -329,6 +329,8 @@ const App = () => {
           </div>
         }
         <div className='about-wrapper'>
+          <p id='note'>Note: Any irregularities in the graphs are solely caused by data fetched from the API.
+            Countries with separate data for each province have different provinces' numbers added into a single date.</p>
           <h2>About</h2>
           <p>
             The data used for the graphs in this project is publicly available
